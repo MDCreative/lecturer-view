@@ -31,7 +31,7 @@ app.factory('lectureService', function($rootScope, $firebase){
 app.controller("lecture", function($scope, $firebase, lectureService){
 	$scope.openLecture = function(){
 		lectureService.setLectureId();
-		console.log(lectureService.lectureId());
+		$scope.leccode = lectureService.lectureId();
 	}
 })
 app.controller("hashtags", function($scope, $firebase){
