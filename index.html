@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html ng-app="lv">
+	<head>
+		<link rel="stylesheet" type="text/css" href="assets/semantic/semantic.min.css" />
+		<link rel="stylesheet" type="text/css" href="assets/style.css" />
+		<script type="text/javascript" src="assets/jquery.js"></script>
+		<script type="text/javascript" src="assets/semantic/semantic.min.js"></script>
+		<script type="text/javascript" src="assets/angular.min.js"></script>
+		<script type="text/javascript" src="assets/firebase.js"></script>
+		<script type="text/javascript" src="assets/angularfire.min.js"></script>
+		<script type="text/javascript" src="assets/script.js"></script>
+	</head>
+	<body>
+		<div class="ui fixed main menu">
+			<div class="container">
+				<div class="title item">
+					<strong>Interactive Lectures:</strong> Lecturer View
+				</div>
+			</div>
+		</div>
+
+		<div class="hashtags" ng-controller="hashtags">
+			<div class="container">
+				<ticker></ticker>
+			</div>
+		</div>
+		<div class="footer">
+			<div class="container" ng-controller="questions">
+				<div class="ui fluid five item menu">
+					<a class="item big" ng-click="send(1)">T/F</a>
+				 	<a class="item big" ng-click="send(2)">2</a>
+				  	<a class="item big" ng-click="send(3)">3</a>
+				  	<a class="item big" ng-click="send(4)">4</a>
+				  	<a class="item big" ng-click="send(5)">5</a>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
