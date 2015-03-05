@@ -22,7 +22,7 @@
 
 		<div ng-controller="lecture">
 			<div class="container">
-				<h1 ng-show="!isUndefined(leccode)">Lecture Code: {{leccode}}</h1>
+				<h1 ng-show="!isUndefined(leccode)">Lecture Code: {{leccode}} (<span ng-bind="connections"></span> Connections)</h1>
 				<div class="ui compact labeled icon button" ng-click="openLecture()">
 				  <i class="thumbs up icon"></i>
 				  Open Lecture

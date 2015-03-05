@@ -1,7 +1,7 @@
 var app = angular.module("lv", ["firebase"]);
 app.factory('lectureService', function($rootScope, $firebase){
 	var lectureId = null;
-	var setLectureId = function(){
+	var setLectureId = function(callBack){
 		var time = new Date();
 		var mins = (parseInt(time.getUTCMinutes()) % 16).toString(16);
 		var hour = parseInt(time.getUTCHours()).toString(16);
@@ -12,28 +12,52 @@ app.factory('lectureService', function($rootScope, $firebase){
 		lectureId = id;
 		var lectureRef = new Firebase("https://interactive-lecture.firebaseio.com/Test/" + lectureId);
 		var sync = $firebase(lectureRef);
+		var childRef;
 		sync.$set({
-			status: 1,
-			connections: 0
+			status: 1
 		}).then(function(newChildRef){
 			$rootScope.ref = lectureRef;
+			clients = lectureRef.child('users')
+			callBack();
 		});
 
 
+	}
+	var getClients = function(){
+		return clients;
 	}
 	var getLectureId = function(){
 		return lectureId;
 	}
 	return{
 		setLectureId: setLectureId,
-		lectureId: getLectureId
+		lectureId: getLectureId,
+		getClients: getClients
 	}
 });
-app.controller("lecture", function($scope, $firebase, lectureService){
+app.controller("lecture", function($rootScope, $scope, $firebase, lectureService){
+	$scope.connections = 0;
 	$scope.openLecture = function(){
-		lectureService.setLectureId();
-		$scope.leccode = lectureService.lectureId();
+		lectureService.setLectureId(function(){
+			$scope.leccode = lectureService.lectureId();
+			$scope.clients = new Firebase("https://interactive-lecture.firebaseio.com/Test/" + $scope.leccode + "/users");
+			
+			$scope.clients.on('child_added', function(){
+				$scope.connections++;
+				$rootScope.$apply();
+			});
+			$scope.clients.on('child_removed', function(){
+				$scope.connections--;
+				$rootScope.$apply();
+			});
+
+		});
+		
+		
+
 	}
+	
+	
 	$scope.isUndefined = function (thing) {
 	    return (typeof thing === "undefined");
 	}
