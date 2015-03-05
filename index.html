@@ -16,12 +16,18 @@
 				<div class="title item">
 					<strong>Interactive Lectures:</strong> Lecturer View
 				</div>
+
 			</div>
 		</div>
 
 		<div ng-controller="lecture">
-			<h1>{{leccode}}</h1>
-			<a ng-click="openLecture()">Open</a>
+			<div class="container">
+				<h1 ng-show="!isUndefined(leccode)">Lecture Code: {{leccode}}</h1>
+				<div class="ui compact labeled icon button" ng-click="openLecture()">
+				  <i class="thumbs up icon"></i>
+				  Open Lecture
+				</div>
+			</div>
 		</div>
 
 		<div class="hashtags" ng-controller="hashtags">

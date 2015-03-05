@@ -12,8 +12,9 @@ app.factory('lectureService', function($rootScope, $firebase){
 		lectureId = id;
 		var lectureRef = new Firebase("https://interactive-lecture.firebaseio.com/Test/" + lectureId);
 		var sync = $firebase(lectureRef);
-		sync.$push({
-			status: 1
+		sync.$set({
+			status: 1,
+			connections: 0
 		}).then(function(newChildRef){
 			$rootScope.ref = lectureRef;
 		});
@@ -32,6 +33,9 @@ app.controller("lecture", function($scope, $firebase, lectureService){
 	$scope.openLecture = function(){
 		lectureService.setLectureId();
 		$scope.leccode = lectureService.lectureId();
+	}
+	$scope.isUndefined = function (thing) {
+	    return (typeof thing === "undefined");
 	}
 })
 app.controller("hashtags", function($scope, $firebase){
@@ -52,7 +56,7 @@ app.controller("questions", function($rootScope, $scope, $firebase){
 		sync.$push({
 			type: type,
 			time: Date.now()
-		})
+		});
 	}
 });
 
