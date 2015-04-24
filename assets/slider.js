@@ -4,6 +4,9 @@ var duration = 1000 * 60;
 var startTime;// = +(new Date());
 var endTime;// = startTime + duration;
 
+var markers = [];
+var questionRefs = [];
+
 var sums = {
 	        x : 0,
 	        y : 0,
@@ -78,7 +81,7 @@ function getLast5Minutes()
 	//console.log(rightHandTime - windowSize);
 }
 
-function moveMarkerToCurrentTime(marker)
+function moveMarkerToCurrentTime(marker, firebaseRef)
 {
 	//Window inner width
 	var width = window.innerWidth;
@@ -89,6 +92,29 @@ function moveMarkerToCurrentTime(marker)
 	var timeX = width * clamp01(timePercent);
 	
 	marker.css("left", timeX + "px");
+
+	markers.push(marker);
+	questionRefs.push(firebaseRef);
+	
+	marker.click(function()
+	{
+		for(var i = 0; i < markers.length; i++)
+		{
+			if(markers[i] == marker)
+				showDisplay(questionRefs[i]);
+		}
+	});
+}
+
+function showDisplay(ref)
+{
+	$("#barchart-dialog").css("left", ((window.innerWidth / 2) - $("#barchart-dialog").width() / 2) + "px");
+	$("#barchart-dialog").css("top", ((window.innerHeight / 2) - $("#barchart-dialog").height() / 2) + "px");
+	
+	
+	//clear
+	//add in new html
+	//show some dialog
 }
 
 function getCursorXPercent(x)
@@ -164,6 +190,11 @@ $(window).load(function()
 		drag = false; 
 	});
 
+	/*$(".big.marker.icon").click(function()
+	{
+		console.log("hello!");
+	});*/
+	
 	$("body").mousemove(function(e)
 	{
 		if(!drag)
@@ -372,17 +403,48 @@ function update()
 	chart.select("rect").duration(500).attr("d", data);
 }
 
-function makeBarChart()
+function updateBarChart(data)
 {
-	var data = [4, 55, 15, 16, 23, 42];
+	//Passed data is an array of objects:
+	/*
+		= [
+			{ 
+				label : "...",
+				data  : 50
+			},
+			
+			{ 
+				label : "...",
+				data  : 25
+			},
+			
+			...
+		]
+	*/
+	
+	var values = [], labels = [];
+	
+	for(var i = 0; i < data.length; i++)
+		values[i] = data[i].data,
+		labels[i] = data[i].label;
+	
+	
+	var divID = "#barchart";
+	//var data = [4, 55, 15, 16, 23, 42];
 
+	//Clear the div
+	$(divID).html("");
+	
+	//Create the bar chart within the div
 	var x = d3.scale.linear()
-		.domain([0, d3.max(data)])
+		.domain([0, d3.max(values)])
 		.range([0, 420]);
-
-	d3.select("#barchart")
+	
+	var valueSum = values.reduce(function(p, c) { return p + c });
+	
+	d3.select(divID)
 	  .selectAll("rect")
-		.data(data)
+		.data(values)
 	  .enter().append("rect")
 		.style("width", function(d) { return ( x(d)) + "px"; })
 			.style("height", "50px")
@@ -390,12 +452,13 @@ function makeBarChart()
 			//.style("top")
 			//.attr("transform", function(d, i) { return "translate(" + i * barWidth + ",0)"; })
 			//.style("height", 420 - x(d) + "px")
-		.text(function(d) { return d; });
+		.text(function(d, i) { return (labels[i] + " - " + Math.floor(values[i] / valueSum * 100) + "%"); });
 
 }
 
 $(document).ready(function()
 {
 	makeDonutChart();
-	makeBarChart();
+	updateBarChart([ { label : "True", data : 1 }, { label : "False", data : 2 } ]);
+	//makeBarChart();
 });

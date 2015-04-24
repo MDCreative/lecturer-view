@@ -83,10 +83,13 @@ app.controller("questions", function($rootScope, $scope, $firebase){
 		sync.$push({
 			type: type,
 			time: Date.now()
+		}).then(function(ref){
+			//console.log(ref.key());
+			var marker = $("<i class=\"big marker icon\"></i>").appendTo("#markers");
+			
+			moveMarkerToCurrentTime(marker, ref);
 		});
 		
-		var marker = $("<i class=\"big marker icon\"></i>").appendTo("#markers");
-		moveMarkerToCurrentTime(marker);
 	}
 });
 

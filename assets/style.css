@@ -28,6 +28,7 @@ body{
 html,body{
 	height: 100%;
 }
+
 .container{
 	width: 1000px;
 	margin: 0 auto;
@@ -51,8 +52,23 @@ path.slice{
 	height:30px;
 }
 
+#barchart-dialog
+{
+	opacity:0.9;
+	border-radius:10px;
+	z-index:999;
+	background-color:white;
+	width:500px;
+	height:500px;
+	position:absolute;
+	-webkit-box-shadow: -1px 0px 25px 0px rgba(0,0,0,0.75);
+-moz-box-shadow: -1px 0px 25px 0px rgba(0,0,0,0.75);
+box-shadow: -1px 0px 25px 0px rgba(0,0,0,0.75);
+}
+
 .big.marker.icon
 {
+	cursor:pointer;
 	margin-left:-17.5px;
 	position:absolute;
 	float:left;
