@@ -1,6 +1,6 @@
 var app = angular.module("lv", ["firebase"]);
 app.factory('lectureService', function($rootScope, $firebase){
-	var lectureId = null;
+	lectureId = null;
 	var setLectureId = function(callBack){
 		var time = new Date();
 		var mins = (parseInt(time.getUTCMinutes()) % 16).toString(16);
@@ -10,6 +10,7 @@ app.factory('lectureService', function($rootScope, $firebase){
 		var year = parseInt(time.getFullYear().toString().substr(2,2)).toString(16);
 		id = year + "" + month + "" + day + "" + hour + "" + mins
 		lectureId = id;
+
 		var lectureRef = new Firebase("https://interactive-lecture.firebaseio.com/Test/" + lectureId);
 		var sync = $firebase(lectureRef);
 		var childRef;
@@ -51,6 +52,8 @@ app.controller("lecture", function($rootScope, $scope, $firebase, lectureService
 				$rootScope.$apply();
 			});
 
+			startSliderBar($scope.leccode);
+
 		});
 		
 		
@@ -84,10 +87,10 @@ app.controller("questions", function($rootScope, $scope, $firebase){
 	}
 });
 
-app.directive("ticker", function(){
+/*app.directive("ticker", function(){
 	return{
 		templateUrl: "assets/ang-templates/ticker.html",
 		restrict: "E"
 	}
-});
+});*/
 	
