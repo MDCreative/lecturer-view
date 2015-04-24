@@ -1,9 +1,28 @@
+#barchart rect {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+
+#barchart
+{
+	padding-top:50px;
+}
+
 body{
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   height: 500px;
   margin:40px 0px 0px 0px;
   padding:0;
   position: relative;
+}
+
+#chart
+{
+	height:500px;
 }
 
 html,body{
@@ -17,13 +36,26 @@ html,body{
 	position: bottom;
 }
 
+
 svg {
-	width: 100%;
-	height: 100%;
+	width: 800px;
+	height: 500px;
 }
 
 path.slice{
 	stroke-width:2px;
+}
+
+#markers
+{
+	height:30px;
+}
+
+.big.marker.icon
+{
+	margin-left:-17.5px;
+	position:absolute;
+	float:left;
 }
 
 polyline{
@@ -48,6 +80,7 @@ polyline{
 	background-color:#CCC;
 	border-right:1px solid black;
 	width:0%;
+	cursor:pointer;
 	height:40px;
 }
 

@@ -1,10 +1,6 @@
-
-/*
-*/
-
-/*var lectureRunning = false;
-var windowSize =  1000 * 10;
-var duration = 100000;
+var lectureRunning = false;
+var windowSize =  5000;
+var duration = 1000 * 60;
 var startTime;// = +(new Date());
 var endTime;// = startTime + duration;
 
@@ -61,7 +57,7 @@ function getLast5Minutes()
 		{
 			var entry = subvalue.val();
 
-			console.log(entry);
+			//
 			sums.x += entry.x;
 			sums.y += entry.y;
 			sums.z += entry.z;
@@ -71,8 +67,28 @@ function getLast5Minutes()
 		});
 	});
 
+	if(!triadCount)
+	{
+		//Nothing has been pulled.
+		sums.x = sums.y = sums.z = 1;
+		triadCount = 3;
+		change(updateValues());
+	}
 	//fb.pull(time > left && time < right)
 	//console.log(rightHandTime - windowSize);
+}
+
+function moveMarkerToCurrentTime(marker)
+{
+	//Window inner width
+	var width = window.innerWidth;
+
+	var now = +(new Date());
+
+	var timePercent = (now - startTime) / (endTime - startTime);
+	var timeX = width * clamp01(timePercent);
+	
+	marker.css("left", timeX + "px");
 }
 
 function getCursorXPercent(x)
@@ -140,7 +156,13 @@ $(window).load(function()
 	$("#outer-bar").hide();
 
 	$("#outer-bar").mousedown(function() { drag = true; });
-	$("*").mouseup(function() { drag = false; });
+	$("*").mouseup(function() 
+	{ 
+		if(drag)
+			getLast5Minutes();
+		
+		drag = false; 
+	});
 
 	$("body").mousemove(function(e)
 	{
@@ -156,7 +178,7 @@ $(window).load(function()
 		var widthOfSlider = $("#slider").width();
 		var percent = widthOfSlider/$("#time-bar").width();
 
-		var endPercent = (getCursorXPercent(x)// - (percent / 2));
+		var endPercent = (getCursorXPercent(x)/* - (percent / 2)*/);
 
 		if(endPercent <= percent / 2)
 			endPercent = 0;
@@ -176,9 +198,9 @@ $(window).load(function()
 });
 
 
-var timer = window.setInterval(getLast5Minutes, 5000);
+//var timer = window.setInterval(getLast5Minutes, 5000);
 //getLast5Minutes();
-*/
+
 /*svg.firebase(fbUrl,
 {
 	createFunc : function(newData) 
@@ -202,7 +224,7 @@ function updateValues ()
 	{
 		return { 
 			label: label, 
-			value: 3//sums[Object.keys(sums)[index]] / triadCount
+			value: sums[Object.keys(sums)[index]] / triadCount
 		}
 	});
 }
@@ -300,7 +322,7 @@ function change(data) {
 
 var svg, pie, arc, outerArc, color, key, radius;
 
-function makeChart()
+function makeDonutChart()
 {
 	svg = d3.select("#chart")
 		.append("svg")
@@ -341,8 +363,39 @@ function makeChart()
 		.range(["#9b59b6", "#2980b9", "#2ecc71"]);
 }
 
+function update()
+{
+	var data = [8, 1, 88, 35, 21, 3];
+
+	var chart = d3.select("#barchart").transition();
+	
+	chart.select("rect").duration(500).attr("d", data);
+}
+
+function makeBarChart()
+{
+	var data = [4, 55, 15, 16, 23, 42];
+
+	var x = d3.scale.linear()
+		.domain([0, d3.max(data)])
+		.range([0, 420]);
+
+	d3.select("#barchart")
+	  .selectAll("rect")
+		.data(data)
+	  .enter().append("rect")
+		.style("width", function(d) { return ( x(d)) + "px"; })
+			.style("height", "50px")
+			.style("display", "block")
+			//.style("top")
+			//.attr("transform", function(d, i) { return "translate(" + i * barWidth + ",0)"; })
+			//.style("height", 420 - x(d) + "px")
+		.text(function(d) { return d; });
+
+}
+
 $(document).ready(function()
 {
-	makeChart();
-	change(updateValues());
+	makeDonutChart();
+	makeBarChart();
 });

@@ -84,6 +84,9 @@ app.controller("questions", function($rootScope, $scope, $firebase){
 			type: type,
 			time: Date.now()
 		});
+		
+		var marker = $("<i class=\"big marker icon\"></i>").appendTo("#markers");
+		moveMarkerToCurrentTime(marker);
 	}
 });
 
