@@ -283,6 +283,14 @@ $(window).load(function()
 {
 	$("#slider").css("opacity", "0.0");
 	
+	$(".ui.checkbox").click(function()
+	{
+		var elem = $(this).find("input");
+		
+		elem.prop("checked", !elem.prop("checked"));
+		//console.log(elem.prop("checked"));
+	});
+	
 	$(".ui.radio.checkbox").click(function()
 	{
 		//console.log("hi");
