@@ -7,6 +7,11 @@
   color: white;
 }
 
+.hashtag-content
+{
+	height:45px;
+}
+
 .icon.button
 {
 	float:left;

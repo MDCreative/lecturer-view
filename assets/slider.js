@@ -225,6 +225,8 @@ function clamp01(value)
 		return value;
 }
 
+var hashtagsArray = new Array(5);
+
 function startSliderBar(id)
 {
 	//Start the lecture, set id passed
@@ -250,15 +252,24 @@ function startSliderBar(id)
 	ref = new Firebase("https://interactive-lecture.firebaseio.com/Test/" + lectureID + "/hashtags");
 
 	//console.dir(ref);
-	var builtText = "";
+	//var builtText = "";
+	console.log("hi");
 
-	ref.startAt().limitToFirst(5).on("child_added", function(value)
+	ref.on("child_added", function(value)
 	{
+		if(typeof(hashtagsArray[0]) === "undefined")
+			$(".hashtag-content").show();
+
 		var tag = value.val().tag;
-		builtText += tag + " ";
+
+		// console.log(value.val().tag);
+		hashtagsArray = hashtagsArray.slice(1, hashtagsArray.length);
+		hashtagsArray.push("<div class=\"ui label\">" + tag + "</div>");
+
+		$(".hashtag-content").html(hashtagsArray.join(""));
 	});
 
-	$(".hashtag-content").html("").text(builtText);
+	//$(".hashtag-content").html(builtText);
 }
  
 function lintime(start, end, percent)
@@ -306,6 +317,7 @@ $(window).load(function()
 	
 	$("#barchart-dialog").hide();
 	$("#outer-bar").hide();
+	$(".hashtag-content").hide();
 
 	$("#outer-bar").mousedown(function() 
 	{ 
