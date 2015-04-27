@@ -491,10 +491,12 @@ function updateBarChart(labels, values)
 	//Clear the div
 	$(divID).html("");
 	
+	var max = 410;
+
 	//Create the bar chart within the div
 	var x = d3.scale.linear()
-		.domain([0, d3.max(values)])
-		.range([0, 350]);
+		.domain([0, d3.max(values) ])
+		.range([0, max]);
 	
 	var valueSum = values.reduce(function(p, c) { return p + c });
 	
@@ -502,7 +504,13 @@ function updateBarChart(labels, values)
 	  .selectAll("rect")
 		.data(values)
 	  .enter().append("rect")
-		.style("width", function(d) { return ( x(d))+40 + "px"; })
+		.style("width", function(d, i)
+		{
+			var percent = (values[i] / valueSum);
+			console.log(max * percent);
+			return max * percent + 40 + "px";
+			//return ( x(d)) + 40 + "px"; 
+		})
 			.style("height", "50px")
 			.style("display", "block")
 			//.style("top")
@@ -515,4 +523,5 @@ function updateBarChart(labels, values)
 $(document).ready(function()
 {
 	makeDonutChart();
+	//updateBarChart(["a", "b"], [0, 200]);
 });
