@@ -7,6 +7,23 @@
   color: white;
 }
 
+.icon.button
+{
+	float:left;
+}
+
+.inner
+{
+	width:900px;
+	height:35px;
+}
+
+.field
+{
+	float:left;
+	padding-left:20px;
+}
+
 #barchart
 {
 	padding-top:50px;

@@ -66,12 +66,22 @@ app.controller("lecture", function($rootScope, $scope, $firebase, lectureService
 	}
 })
 app.controller("hashtags", function($scope, $firebase){
-	$scope.ref = new Firebase("https://interactive-lecture.firebaseio.com/Test/hashtags");
+	/*$scope.ref = new Firebase("https://interactive-lecture.firebaseio.com/Test/" + lectureId + "/hashtags");
 	var sync = $firebase($scope.ref);
+
+	var ref = sync.$ref();
+
+	console.dir(ref);
+	ref.on("child_added", function(value)
+	{
+		console.log(value);
+	});
+
 	$scope.hashtags = sync.$asArray();
 	$scope.alert = function(message){
 		alert(message);
-	}
+	}*/
+	//console.log($scope.hashtags);
 });
 app.controller("questions", function($rootScope, $scope, $firebase){
 	// $scope.ref = new Firebase("https://interactive-lecture.firebaseio.com/Test/Questions");

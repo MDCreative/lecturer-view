@@ -1,6 +1,6 @@
 var lectureRunning = false;
-var windowSize =  5000;
-var duration = 1000 * 60;
+var duration = 1000 * 60 * 60;
+var windowSize = duration / 20;
 var startTime;// = +(new Date());
 var endTime;// = startTime + duration;
 
@@ -244,7 +244,21 @@ function startSliderBar(id)
 	//Show the bar and start the animation.
 	$("#outer-bar").show();
 	setInterval(moveTimebar, 10);
-	//$("#time-bar").animate({ width: '100%' }, duration, 'linear');
+	
+	$(".inner").hide();
+
+	ref = new Firebase("https://interactive-lecture.firebaseio.com/Test/" + lectureID + "/hashtags");
+
+	//console.dir(ref);
+	var builtText = "";
+
+	ref.startAt().limitToFirst(5).on("child_added", function(value)
+	{
+		var tag = value.val().tag;
+		builtText += tag + " ";
+	});
+
+	$(".hashtag-content").html("").text(builtText);
 }
  
 function lintime(start, end, percent)
@@ -258,12 +272,25 @@ $(window).load(function()
 {
 	$("#slider").css("opacity", "0.0");
 	
+	$(".ui.radio.checkbox").click(function()
+	{
+		//console.log("hi");
+		var text = $(this).find("label").text();
+		var value = parseInt(text.replace(/(\d+)\s.+/g, "$1"));
+
+		duration = (1000 * 60) * 60 * value;
+		windowSize = duration / 20;
+
+		$(this).find("input").prop("checked", true);
+	});
+
 	$(window).resize(function()
 	{
 		$("#slider").width(pixelsPerMS(windowSize) + "px");
 		$("#barchart-dialog").css("left", ((window.innerWidth / 2) - $("#barchart-dialog").width() / 2) + "px");
 		$("#barchart-dialog").css("top", ((window.innerHeight / 2) - $("#barchart-dialog").height() / 2) + "px");
 	});
+
 
 	$(document).bind('click', function(elem)
 	{

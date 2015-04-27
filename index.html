@@ -1,90 +1,114 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<link rel="stylesheet" type="text/css" href="assets/semantic/semantic.min.css" />
-		<link rel="stylesheet" type="text/css" href="assets/style.css" />
-		
-		<script type="text/javascript" src="assets/jquery.js"></script>
-		<script type="text/javascript" src="assets/semantic/semantic.min.js"></script>
-		<script type="text/javascript" src="assets/angular.min.js"></script>
-		
-				
-		<script type="text/javascript" src="assets/angularfire.min.js"></script>
-		<script type="text/javascript" src="assets/firebase.js"></script>
-		<script src="assets/d3.v3.min.js"></script>
-		<script src="assets/d3fire.min.js"></script>
 
-		<script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
-		<script src="http://d3js.org/d3.v3.min.js"></script>
-		<script src="assets/d3fire.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<head>
+    <link rel="stylesheet" type="text/css" href="assets/semantic/semantic.min.css" />
+    <link rel="stylesheet" type="text/css" href="assets/style.css" />
 
-		<script type="text/javascript" src="assets/slider.js"></script>
-		<script type="text/javascript" src="assets/script.js"></script>
-		
-		<title>Lecturer view</title>
-	</head>
-	<body>
-			
-	<div ng-app="lv">
-		<div class="ui fixed main menu">
-			<div class="container">
-				<div class="title item">
-					<strong>Interactive Lectures:</strong> Lecturer View
-				</div>
+    <script type="text/javascript" src="assets/jquery.js"></script>
+    <script type="text/javascript" src="assets/semantic/semantic.min.js"></script>
+    <script type="text/javascript" src="assets/angular.min.js"></script>
 
-			</div>
-		</div>
 
-		<div ng-controller="lecture">
-			<div class="container">
-				<h1 ng-show="!isUndefined(leccode)">Lecture Code: {{leccode}} (<span ng-bind="connections"></span> Connections)</h1>
-				<div class="ui compact labeled icon button" ng-click="openLecture()">
-				  <i class="thumbs up icon"></i>
-				  Open Lecture
-				</div>
-			</div>
-		</div>
+    <script type="text/javascript" src="assets/angularfire.min.js"></script>
+    <script type="text/javascript" src="assets/firebase.js"></script>
+    <script src="assets/d3.v3.min.js"></script>
+    <script src="assets/d3fire.min.js"></script>
 
-		<div class="hashtags" ng-controller="hashtags">
-			<div class="container">
-				<ticker></ticker>
-			</div>
-		</div>
-		<div class="footer">
-			<div class="container" ng-controller="questions">
-				<div class="ui fluid five item menu">
-					<a class="item big" ng-click="send(1)">T/F</a>
-				 	<a class="item big" ng-click="send(2)">2</a>
-				  	<a class="item big" ng-click="send(3)">3</a>
-				  	<a class="item big" ng-click="send(4)">4</a>
-				  	<a class="item big" ng-click="send(5)">5</a>
-				</div>
-			</div>
-		</div>
+    <script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="assets/d3fire.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
-		<div id="barchart-dialog">
-			<h3>Answers</h3>
-			<div id="barchart">
-			</div>
-		</div>
-		
-		<div class="ui grid">
-			<div class="sixteen wide column">
-				<div id="chart">
-				</div>
-			</div>
-		</div>
-		
-		<div id="markers">
-			
-		</div>
-		<div id="outer-bar">
-			<div id="time-bar">
-				<div id="slider"></div>
-			</div>
-		</div>
-	</div>
-		
-	</body>
+    <script type="text/javascript" src="assets/slider.js"></script>
+    <script type="text/javascript" src="assets/script.js"></script>
+
+    <title>Lecturer view</title>
+</head>
+
+<body>
+    <div ng-app="lv">
+        <div class="ui fixed main menu">
+            <div class="container">
+                <div class="title item">
+                    <strong>Interactive Lectures:</strong> Lecturer View
+                </div>
+
+            </div>
+        </div>
+
+        <div ng-controller="lecture">
+            <div class="container">
+                <h1 ng-show="!isUndefined(leccode)">Lecture Code: {{leccode}} (<span ng-bind="connections"></span> Connections)</h1>
+                <div class="inner">
+                    <div class="ui compact labeled icon button" ng-click="openLecture()">
+                        <i class="thumbs up icon"></i> Open Lecture
+                    </div>
+                    <div class="grouped inline fields">
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" checked="checked" name="hours">
+                                <label>1 hour</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="hours">
+                                <label>2 hours</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="hours">
+                                <label>3 hours</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="hashtags" ng-controller="hashtags">
+            <div class="container">
+                <ticker>{{hashtags.tag}}</ticker>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="container" ng-controller="questions">
+                <div class="ui fluid five item menu">
+                    <a class="item big" ng-click="send(1)">T/F</a>
+                    <a class="item big" ng-click="send(2)">2</a>
+                    <a class="item big" ng-click="send(3)">3</a>
+                    <a class="item big" ng-click="send(4)">4</a>
+                    <a class="item big" ng-click="send(5)">5</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="barchart-dialog">
+            <h3>Answers</h3>
+            <div id="barchart">
+            </div>
+        </div>
+
+        <div class="ui grid">
+            <div class="sixteen wide column">
+                <div id="chart">
+                </div>
+            </div>
+        </div>
+
+        <div id="markers">
+
+        </div>
+        <div id="outer-bar">
+            <div id="time-bar">
+                <div id="slider"></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
 </html>
