@@ -106,15 +106,93 @@ function moveMarkerToCurrentTime(marker, firebaseRef)
 	});
 }
 
+function generateLabels(type)
+{
+	if(type == 1)
+		return ["True", "False"];
+		
+	return ["a", "b", "c", "d", "e"].slice(0, type);
+}
+
+function timediff(milliseconds) 
+{
+    function numberEnding (number) 
+    {
+        return (number > 1) ? 's' : '';
+    }
+ 
+    //var oldDate = +(new Date(milliseconds));
+	milliseconds = new Date().getTime() - milliseconds;
+    
+    var temp = Math.floor(milliseconds / 1000);
+    var years = Math.floor(temp / 31536000);
+    if (years)
+        return years + ' year' + numberEnding(years) + " ago";
+    
+    //TODO: Months! Maybe weeks? 
+    var days = Math.floor((temp %= 31536000) / 86400);
+    if (days)
+        return days + ' day' + numberEnding(days) + " ago";
+    
+    var hours = Math.floor((temp %= 86400) / 3600);
+    if (hours)
+        return hours + ' hour' + numberEnding(hours) + " ago";
+    
+    var minutes = Math.floor((temp %= 3600) / 60);
+    if (minutes)
+        return minutes + ' minute' + numberEnding(minutes) + " ago";
+    
+    var seconds = temp % 60;
+    if (seconds)
+        return seconds + ' second' + numberEnding(seconds) + " ago";
+    
+    return 'just now';
+}
+
 function showDisplay(ref)
 {
-	$("#barchart-dialog").css("left", ((window.innerWidth / 2) - $("#barchart-dialog").width() / 2) + "px");
-	$("#barchart-dialog").css("top", ((window.innerHeight / 2) - $("#barchart-dialog").height() / 2) + "px");
+	var labels, answers;
 	
-	
-	//clear
-	//add in new html
-	//show some dialog
+	ref.once('value', function(value)
+	{
+		var data = value.val();
+		
+		labels = generateLabels(data.type);
+		answers = [0, 0, 0, 0, 0].slice(0, labels.length);
+		
+		if("answers" in data)
+		{
+			for(var key in data.answers)
+			{
+				var index = parseInt(data.answers[key].answer) - 1;
+				
+				if(data.answers[key].answer == "T")
+					index = 0;
+					
+				else if(data.answers[key].answer == "F")
+					index = 1;
+					
+				answers[index]++;
+			}
+		}
+		
+		$("#barchart").html("");
+		
+		var difference = timediff(data.time);
+		
+		$("#barchart-dialog > h3").text("Question results (asked " + difference + ")");
+		
+		var answersSum = answers.reduce(function(p, c) { return p + c });
+		
+		if(answersSum == 0)
+			$("#barchart").html("There are no answers just yet!");
+		else
+			updateBarChart(labels, answers);
+		
+		$("#barchart-dialog").fadeIn("slow");
+		$("#barchart-dialog").css("left", ((window.innerWidth / 2) - ($("#barchart-dialog").width()) / 2) + "px");
+		$("#barchart-dialog").css("top", ((window.innerHeight / 2) - ($("#barchart-dialog").height()) / 2) + "px");
+	});
 }
 
 function getCursorXPercent(x)
@@ -158,7 +236,11 @@ function startSliderBar(id)
 
 	//Set up firebase URL
 	fbUrl = new Firebase("https://interactive-lecture.firebaseio.com/Test/" + id + "/triad");
-	
+
+	sums.x = sums.y = sums.z = 1;
+	triadCount = 3;
+	change(updateValues());
+		
 	//Show the bar and start the animation.
 	$("#outer-bar").show();
 	setInterval(moveTimebar, 10);
@@ -174,14 +256,38 @@ var drag = false;
 
 $(window).load(function()
 {
+	$("#slider").css("opacity", "0.0");
+	
 	$(window).resize(function()
 	{
 		$("#slider").width(pixelsPerMS(windowSize) + "px");
+		$("#barchart-dialog").css("left", ((window.innerWidth / 2) - $("#barchart-dialog").width() / 2) + "px");
+		$("#barchart-dialog").css("top", ((window.innerHeight / 2) - $("#barchart-dialog").height() / 2) + "px");
 	});
 
+	$(document).bind('click', function(elem)
+	{
+		if($(elem.target).is("#barchart-dialog"))
+			return;
+			
+		if($(elem.target).is(".big.marker.icon"))
+			return;
+			
+		if($("#barchart-dialog").css('display') != 'none')
+			$("#barchart-dialog").fadeOut("slow");
+	});
+	
+	$("#barchart-dialog").hide();
 	$("#outer-bar").hide();
 
-	$("#outer-bar").mousedown(function() { drag = true; });
+	$("#outer-bar").mousedown(function() 
+	{ 
+		drag = true;
+		
+		if($("#slider").css("opacity") == "0")
+			$("#slider").animate({ opacity : 1.0 }, "slow");
+	});
+	
 	$("*").mouseup(function() 
 	{ 
 		if(drag)
@@ -189,11 +295,6 @@ $(window).load(function()
 		
 		drag = false; 
 	});
-
-	/*$(".big.marker.icon").click(function()
-	{
-		console.log("hello!");
-	});*/
 	
 	$("body").mousemove(function(e)
 	{
@@ -204,7 +305,6 @@ $(window).load(function()
 			return;
 
 		var x = e.pageX;
-		
 
 		var widthOfSlider = $("#slider").width();
 		var percent = widthOfSlider/$("#time-bar").width();
@@ -224,28 +324,7 @@ $(window).load(function()
 		$("#slider").width(pixelsPerMS(windowSize) + "px");
 	});
 
-	//if()
-	//$("#time-bar").animate({ width: '100%' }, duration, 'linear');
 });
-
-
-//var timer = window.setInterval(getLast5Minutes, 5000);
-//getLast5Minutes();
-
-/*svg.firebase(fbUrl,
-{
-	createFunc : function(newData) 
-	{
-		//var values = getLast5Minutes();
-		
-		getLast5Minutes();
-		console.log(newData.val())
-		
-		change(updateValues());
-		getLast5Minutes();
-	}
-});*/
-
 
 function updateValues ()
 {
@@ -260,7 +339,8 @@ function updateValues ()
 	});
 }
 
-function change(data) {
+function change(data)
+{
 
 	//------- PIE SLICES -------
 	var slice = svg.select(".slices").selectAll("path.slice")
@@ -366,8 +446,8 @@ function makeDonutChart()
 	svg.append("g")
 		.attr("class", "lines");
 
-	var width = 960,
-	    height = 450;
+	var width = 800,
+	    height = 500;
 	
 	radius = Math.min(width, height) / 2;
 
@@ -403,32 +483,8 @@ function update()
 	chart.select("rect").duration(500).attr("d", data);
 }
 
-function updateBarChart(data)
-{
-	//Passed data is an array of objects:
-	/*
-		= [
-			{ 
-				label : "...",
-				data  : 50
-			},
-			
-			{ 
-				label : "...",
-				data  : 25
-			},
-			
-			...
-		]
-	*/
-	
-	var values = [], labels = [];
-	
-	for(var i = 0; i < data.length; i++)
-		values[i] = data[i].data,
-		labels[i] = data[i].label;
-	
-	
+function updateBarChart(labels, values)
+{	
 	var divID = "#barchart";
 	//var data = [4, 55, 15, 16, 23, 42];
 
@@ -438,7 +494,7 @@ function updateBarChart(data)
 	//Create the bar chart within the div
 	var x = d3.scale.linear()
 		.domain([0, d3.max(values)])
-		.range([0, 420]);
+		.range([0, 350]);
 	
 	var valueSum = values.reduce(function(p, c) { return p + c });
 	
@@ -446,7 +502,7 @@ function updateBarChart(data)
 	  .selectAll("rect")
 		.data(values)
 	  .enter().append("rect")
-		.style("width", function(d) { return ( x(d)) + "px"; })
+		.style("width", function(d) { return ( x(d))+40 + "px"; })
 			.style("height", "50px")
 			.style("display", "block")
 			//.style("top")
@@ -459,6 +515,4 @@ function updateBarChart(data)
 $(document).ready(function()
 {
 	makeDonutChart();
-	updateBarChart([ { label : "True", data : 1 }, { label : "False", data : 2 } ]);
-	//makeBarChart();
 });

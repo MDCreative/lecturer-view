@@ -51,7 +51,7 @@ app.controller("lecture", function($rootScope, $scope, $firebase, lectureService
 				$scope.connections--;
 				$rootScope.$apply();
 			});
-
+			
 			startSliderBar($scope.leccode);
 
 		});
