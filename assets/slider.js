@@ -1,68 +1,72 @@
+
 var lectureRunning = false;
 var duration = 1000 * 60 * 60;
 var windowSize = duration / 20;
-var startTime;// = +(new Date());
-var endTime;// = startTime + duration;
-
+var startTime;
+var endTime;
 var markers = [];
 var questionRefs = [];
-
-var sums = {
-	        x : 0,
-	        y : 0,
-	        z : 0
-	    };
-
-var fbUrl;//= new Firebase("https://interactive-lecture.firebaseio.com/Test/f212a1/triad");
+var questionTimes = [];
+var fbUrl;
 var lectureID;
 var triadCount = 0;
 var liveData = true;
-
 var timerInterval = 3000;
 var liveDataTimer = setInterval("getLast5Minutes()", timerInterval);
 
+var sums = 
+{
+	x : 0,
+	y : 0,
+	z : 0
+};
+
+/**
+ * Moves the time bar's marker to the current position (the current time)
+ */
 function moveTimebar()
 {
-	//Window inner width
+	//Get the width of the window to work with
 	var width = window.innerWidth;
 
-	//$("#time-bar").animate({ width: '100%' }, duration, 'linear');
+	//Find the time now (to calculate from)
 	var now = +(new Date());
 
+	//Find the percentage of now from the start to the end, and linearly interpolate with this percentage
 	var timePercent = (now - startTime) / (endTime - startTime);
 	var timeX = width * clamp01(timePercent);
 
+	//Set the width to the calculated time (this will move it)
 	$("#time-bar").width(timeX + "px");
 
 	if(liveData)
 	{
+		//If we're continously moving the time marker, then move it
 		$("#slider").css('left', (timeX - $("#slider").width()) + "px");
 		$("#slider").width(pixelsPerMS(windowSize) + "px");
 	}
 }
 
+/**
+ * Gets the average values in the last 5 minutes for the donut chart and updates it.
+ */
 function getLast5Minutes()
 {
-	// console.log("haoihe");
-
 	if(!lectureRunning)
 		return;
 
-
-	//Window inner width
+	//Get the width of the window to work with.
 	var width = window.innerWidth;
 
-	
-	//animate({ width: '100%' }, duration, 'linear');
-
-	//Left hand
+	//Left hand side of the window (in time)
 	var left = $("#slider").position().left;
 	var leftHandTime = lintime(startTime, endTime, (left / width));
 
-	//Right hand
+	//Right hand side of the window (in time)
 	var right = left + $("#slider").width();
 	var rightHandTime = lintime(startTime, endTime, (right / width));
 
+	//Set sums and count to 0 for a new average count.
 	sums.x = sums.y = sums.z = 0;
 	triadCount = 0;
 
@@ -70,13 +74,16 @@ function getLast5Minutes()
 	{
 		value.forEach(function(subvalue, index)
 		{
+			//Grab all sent values, and loop through them. Get the actual
+			//value:
 			var entry = subvalue.val();
 
-			//
+			//Add the values from the value pulled to the relevant components of the sums object
 			sums.x += entry.x;
 			sums.y += entry.y;
 			sums.z += entry.z;
 
+			//Increment the count to divide by and update the chart.
 			triadCount++;
 			change(updateValues());
 		});
@@ -84,13 +91,15 @@ function getLast5Minutes()
 
 	if(!triadCount)
 	{
-		//Nothing has been pulled.
+		//Nothing has been pulled, so set everything to 1
 		sums.x = sums.y = sums.z = 1;
+
+		//.. and the count to 3 (so everything is 0.33)
 		triadCount = 3;
+
+		//And update the chart
 		change(updateValues());
 	}
-	//fb.pull(time > left && time < right)
-	//console.log(rightHandTime - windowSize);
 }
 
 function moveMarkerToCurrentTime(marker, firebaseRef)
@@ -108,6 +117,8 @@ function moveMarkerToCurrentTime(marker, firebaseRef)
 	markers.push(marker);
 	questionRefs.push(firebaseRef);
 	
+	questionTimes.push(now);
+
 	marker.click(function()
 	{
 		for(var i = 0; i < markers.length; i++)
@@ -276,9 +287,17 @@ function startSliderBar(id)
 
 		var tag = value.val().tag;
 
+		var truncTag = (tag.length > 10) ? (tag.slice(0, 10) + '...') : (tag);
+
 		// console.log(value.val().tag);
 		hashtagsArray = hashtagsArray.slice(1, hashtagsArray.length);
-		hashtagsArray.push("<div class=\"ui label\">" + tag + "</div>");
+		hashtagsArray.push(
+		"<div class=\"ui label\">" 
+			+ truncTag + 
+			"<div class=\"hover-label\" style=\"display:none;left:0px;top:0px;position:absolute;\">" 
+				+ tag + 
+			"</div>" +
+		"</div>");
 
 		$(".hashtag-content").html(hashtagsArray.join(""));
 	});
@@ -516,6 +535,19 @@ function change(data)
 
 var svg, pie, arc, outerArc, color, key, radius;
 
+function canAddQuestion()
+{
+	var now = +(new Date());
+
+	for(var i = 0; i < questionTimes.length; i++)
+	{
+		if(questionTimes[i] > (now - (1000 * 60 * 2)))
+			return false;
+	}
+
+	return true;
+}
+
 function makeDonutChart()
 {
 	svg = d3.select("#chart")
@@ -530,7 +562,7 @@ function makeDonutChart()
 		.attr("class", "lines");
 
 	var width = 800,
-	    height = 500;
+	    height = 460;
 	
 	radius = Math.min(width, height) / 2;
 

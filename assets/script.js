@@ -89,7 +89,13 @@ app.controller("questions", function($rootScope, $scope, $firebase){
 	//$scope.sync = $firebase($rootScope.ref.child('Questions'));
 	$scope.send = function(type){
 		var sync = $firebase($rootScope.ref.child('Questions'));
-		console.log("Working");
+		
+		if(!canAddQuestion())
+		{
+			alert("A question has already been asked in the last 2 minutes.");
+			return;
+		}
+
 		sync.$push({
 			type: type,
 			time: Date.now()

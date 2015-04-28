@@ -7,14 +7,41 @@
   color: white;
 }
 
+.hover-label
+{
+	text-height:25px;
+	background-color:#e8e8e8;
+	padding-left:10px;
+	padding-right:10px;
+	height:100%;
+	line-height:25px;
+	z-index:99;
+	border-right:3px solid #f7f7f7;
+}
+
+.ui.label:hover div 
+{
+	display:block !important;
+}
+
+.ui.grid
+{
+	margin-top:20px !important;
+}
+
+.ui.label
+{
+	position:relative !important;
+}
+
 #live-data-box
 {
-	padding-bottom:15px;
+	margin-left: 10px;
 }
 
 .hashtag-content
 {
-	height:45px;
+	height:30px;
 }
 
 .icon.button
@@ -51,7 +78,7 @@ body{
 {
 	margin:0px auto;
 	width:800px;
-	height:500px;
+	height:450px;
 }
 
 #chart > svg
@@ -145,4 +172,11 @@ polyline{
 	left:0%;
 	height:40px;
 	margin:0;
+}
+#hashtag_field{
+
+	float:right;
+	padding-left:20px;
+
+
 }

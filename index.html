@@ -33,19 +33,25 @@
                 <div class="title item">
                     <strong>Interactive Lectures:</strong> Lecturer View
                 </div>
-
+                <div id="live-data-box" class="ui checkbox">
+                    <input type="checkbox" checked="true"/>
+                    <label>View live statistics</label>
+                </div>
+                
             </div>
         </div>
 
         <div ng-controller="lecture">
             <div class="container">
-                <h1 ng-show="!isUndefined(leccode)">Lecture Code: {{leccode}} (<span ng-bind="connections"></span> Connections)</h1>
-                <div id="live-data-box" class="ui checkbox">
-                    <input type="checkbox" checked="true"/>
-                    <label>View live statistics</label>
-                </div>
+                <h1 ng-show="!isUndefined(leccode)">Lecture Code: {{leccode}} (<span ng-bind="connections"></span> Connections)
+                 <div id ="hashtag_field">
+                            <div class ="hashtag-content">
+                            </div>
+                        </div>
 
-                <div class="inner">
+                </h1>
+
+               <div class="inner">
                     <div class="ui compact labeled icon button" ng-click="openLecture()">
                         <i class="thumbs up icon"></i> Open Lecture
                     </div>
@@ -75,11 +81,12 @@
             </div>
         </div>
 
-        <div class="hashtags" ng-controller="hashtags">
+        <!-- <div class="hashtags" ng-controller="hashtags">
             <div class="container">
-                <div class ="hashtag-content"></div>
+                
             </div>
-        </div>
+        </div> -->
+
         <div class="footer">
             <div class="container" ng-controller="questions">
                 <div class="ui fluid five item menu">
