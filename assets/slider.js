@@ -554,8 +554,7 @@ function updateValues ()
 	return labels.map(function(label,index)
 	{
 		//Map each label name to an average of the values for this label.
-		return
-		{ 
+		return { 
 			label: label, 
 			value: sums[Object.keys(sums)[index]] / triadCount
 		}
