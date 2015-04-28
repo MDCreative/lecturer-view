@@ -5,15 +5,20 @@ var app = angular.module("lv", ["firebase"]);
  * Set the lecture id using a hash 
  * 
  * @param {object} $rootScope - Angular scope object.
- * @param {object} $firebase - Connection to firebase
+ * @param {object} $firebase - Connection to firebase to use
 */
-app.factory('lectureService', function($rootScope, $firebase){
-
+app.factory('lectureService', function($rootScope, $firebase)
+{
+	//The global lecture id (to be used between scripts)
 	lectureId = null;
 
-
-	var setLectureId = function(callBack){
-
+	/**
+	 * Generates and sets the current lecture id.
+	 *
+	 * @param {function} callBack - The callback to run when finished.
+	 */
+	var setLectureId = function(callBack)
+	{
 		//Use timestamp to build the id, and set lectureId to this
 		var time = new Date();
 		var mins = (parseInt(time.getUTCMinutes()) % 16).toString(16);
@@ -24,112 +29,142 @@ app.factory('lectureService', function($rootScope, $firebase){
 		id = year + "" + month + "" + day + "" + hour + "" + mins
 		lectureId = id;
 
-		//Refereance to the current lecture branch
+		//Reference to the current lecture branch
 		var lectureRef = new Firebase("https://interactive-lecture.firebaseio.com/Test/" + lectureId);
 
-
+		//Synchronize an object from firebase for the lecture
 		var sync = $firebase(lectureRef);
 		var childRef;
+		
 		sync.$set({
 			//Status 1 represents an open lecture
 			status: 1 
-		}).then(function(newChildRef){
+		}).then(function(newChildRef)
+		{
+			//Set up the reference, sync the current users and call the callback.
 			$rootScope.ref = lectureRef;
 			clients = lectureRef.child('users') 
 			callBack();
 		});
-
-
 	}
-	var getClients = function(){
+	
+	/**
+	 * Gets the currently connected clients.
+	 */
+	var getClients = function()
+	{
 		return clients;
 	}
-	var getLectureId = function(){
+	
+	/**
+	 * Gets the current lecture id.
+	 */
+	var getLectureId = function()
+	{
 		return lectureId;
 	}
-	return{
+	
+	return
+	{
+		//Return each function as a property of an object.
 		setLectureId: setLectureId,
 		lectureId: getLectureId,
 		getClients: getClients
 	}
 });
-app.controller("lecture", function($rootScope, $scope, $firebase, lectureService){
+
+/**
+ * The controller for the lecture functionality - handles managing of the connection count.
+ *
+ * @param {function} anonymous - The callback to run.
+ */
+app.controller("lecture", function($rootScope, $scope, $firebase, lectureService)
+{
+	//Initially start with no connections
 	$scope.connections = 0;
-	$scope.openLecture = function(){
-		lectureService.setLectureId(function(){
+	
+	/**
+	 * Called when the open lecture button is pressed.
+	 */
+	$scope.openLecture = function()
+	{
+		lectureService.setLectureId(function()
+		{
+			//Set up the lecture ID, and grab it:
 			$scope.leccode = lectureService.lectureId();
+			
+			//Set up a connection to the users branch for later
 			$scope.clients = new Firebase("https://interactive-lecture.firebaseio.com/Test/" + $scope.leccode + "/users");
 			
-			$scope.clients.on('child_added', function(){
+			$scope.clients.on('child_added', function()
+			{
+				//When a user is added to the branch, increment the amount of connections and apply the changes
 				$scope.connections++;
 				$rootScope.$apply();
 			});
-			$scope.clients.on('child_removed', function(){
+			
+			$scope.clients.on('child_removed', function()
+			{
+				//When a user is removed from the branch, decrement the amount of connections and apply the changes.
 				$scope.connections--;
 				$rootScope.$apply();
 			});
 			
+			//And start the time bar moving (signal to slider.js).
 			startSliderBar($scope.leccode);
-
 		});
-		
-		
-
 	}
 	
-	
-	$scope.isUndefined = function (thing) {
+	/**
+	 * Utility function to check if a given variable is undefined.
+	 *
+	 * @param {mixed} thing - The variable to check.
+	 */
+	$scope.isUndefined = function (thing) 
+	{
 	    return (typeof thing === "undefined");
 	}
 })
-app.controller("hashtags", function($scope, $firebase){
-	/*$scope.ref = new Firebase("https://interactive-lecture.firebaseio.com/Test/" + lectureId + "/hashtags");
-	var sync = $firebase($scope.ref);
 
-	var ref = sync.$ref();
-
-	console.dir(ref);
-	ref.on("child_added", function(value)
+/**
+ * Controller for questions functionality - handles the addition of questions.
+ *
+ * @param {function} anonymous - The callback to run.
+ */
+app.controller("questions", function($rootScope, $scope, $firebase)
+{
+	/**
+	 * Adds a question to the lecture.
+	 *
+	 * @param {number} type - The question type to add.
+	*/
+	$scope.send = function(type)
 	{
-		console.log(value);
-	});
-
-	$scope.hashtags = sync.$asArray();
-	$scope.alert = function(message){
-		alert(message);
-	}*/
-	//console.log($scope.hashtags);
-});
-app.controller("questions", function($rootScope, $scope, $firebase){
-	// $scope.ref = new Firebase("https://interactive-lecture.firebaseio.com/Test/Questions");
-	// $scope.sync = $firebase($scope.ref);
-	//$scope.sync = $firebase($rootScope.ref.child('Questions'));
-	$scope.send = function(type){
+		//Find the questions branch to add into
 		var sync = $firebase($rootScope.ref.child('Questions'));
 		
 		if(!canAddQuestion())
 		{
+			//If they can't add a question just yet (the limit is imposed), skip
 			alert("A question has already been asked in the last 2 minutes.");
 			return;
 		}
 
-		sync.$push({
+		//Otherwise push the question to firebase
+		sync.$push(
+		{
 			type: type,
 			time: Date.now()
-		}).then(function(ref){
-			//console.log(ref.key());
+		}).then(function(ref)
+		{
+			//And then generate a marker for this question on the page
 			var marker = $("<i class=\"big marker icon\"></i>").appendTo("#markers");
 			
+			//And move it to the current time.
 			moveMarkerToCurrentTime(marker, ref);
 		});
 		
 	}
 });
 
-/*app.directive("ticker", function(){
-	return{
-		templateUrl: "assets/ang-templates/ticker.html",
-		restrict: "E"
-	}
-});*/
 	
