@@ -1,7 +1,20 @@
+//Create an app for angular
 var app = angular.module("lv", ["firebase"]);
+
+/**
+ * Set the lecture id using a hash 
+ * 
+ * @param {object} $rootScope - Angular scope object.
+ * @param {object} $firebase - Connection to firebase
+*/
 app.factory('lectureService', function($rootScope, $firebase){
+
 	lectureId = null;
+
+
 	var setLectureId = function(callBack){
+
+		//Use timestamp to build the id, and set lectureId to this
 		var time = new Date();
 		var mins = (parseInt(time.getUTCMinutes()) % 16).toString(16);
 		var hour = parseInt(time.getUTCHours()).toString(16);
@@ -11,14 +24,18 @@ app.factory('lectureService', function($rootScope, $firebase){
 		id = year + "" + month + "" + day + "" + hour + "" + mins
 		lectureId = id;
 
+		//Refereance to the current lecture branch
 		var lectureRef = new Firebase("https://interactive-lecture.firebaseio.com/Test/" + lectureId);
+
+
 		var sync = $firebase(lectureRef);
 		var childRef;
 		sync.$set({
-			status: 1
+			//Status 1 represents an open lecture
+			status: 1 
 		}).then(function(newChildRef){
 			$rootScope.ref = lectureRef;
-			clients = lectureRef.child('users')
+			clients = lectureRef.child('users') 
 			callBack();
 		});
 
