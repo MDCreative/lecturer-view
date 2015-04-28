@@ -40,6 +40,11 @@
         <div ng-controller="lecture">
             <div class="container">
                 <h1 ng-show="!isUndefined(leccode)">Lecture Code: {{leccode}} (<span ng-bind="connections"></span> Connections)</h1>
+                <div id="live-data-box" class="ui checkbox">
+                    <input type="checkbox" checked="true"/>
+                    <label>View live statistics</label>
+                </div>
+
                 <div class="inner">
                     <div class="ui compact labeled icon button" ng-click="openLecture()">
                         <i class="thumbs up icon"></i> Open Lecture
@@ -63,12 +68,7 @@
                                 <label>3 hours</label>
                             </div>
                         </div>
-						<div class="field">
-							<div class="ui checkbox">
-								<input type="checkbox" checked="true"/>
-								<label>View live statistics</label>
-							</div>
-						</div>
+						
                     </div>
                 </div>
 

@@ -16,6 +16,10 @@ var sums = {
 var fbUrl;//= new Firebase("https://interactive-lecture.firebaseio.com/Test/f212a1/triad");
 var lectureID;
 var triadCount = 0;
+var liveData = true;
+
+var timerInterval = 3000;
+var liveDataTimer = setInterval("getLast5Minutes()", timerInterval);
 
 function moveTimebar()
 {
@@ -29,10 +33,18 @@ function moveTimebar()
 	var timeX = width * clamp01(timePercent);
 
 	$("#time-bar").width(timeX + "px");
+
+	if(liveData)
+	{
+		$("#slider").css('left', (timeX - $("#slider").width()) + "px");
+		$("#slider").width(pixelsPerMS(windowSize) + "px");
+	}
 }
 
 function getLast5Minutes()
 {
+	// console.log("haoihe");
+
 	if(!lectureRunning)
 		return;
 
@@ -245,6 +257,8 @@ function startSliderBar(id)
 		
 	//Show the bar and start the animation.
 	$("#outer-bar").show();
+	$("#live-data-box").show();
+
 	setInterval(moveTimebar, 10);
 	
 	$(".inner").hide();
@@ -253,7 +267,7 @@ function startSliderBar(id)
 
 	//console.dir(ref);
 	//var builtText = "";
-	console.log("hi");
+	//console.log("hi");
 
 	ref.on("child_added", function(value)
 	{
@@ -281,14 +295,20 @@ var drag = false;
 
 $(window).load(function()
 {
-	$("#slider").css("opacity", "0.0");
+	//$("#slider").css("opacity", "0.0");
 	
-	$(".ui.checkbox").click(function()
+	$("#live-data-box").click(function()
 	{
 		var elem = $(this).find("input");
 		
 		elem.prop("checked", !elem.prop("checked"));
-		//console.log(elem.prop("checked"));
+		
+		liveData = elem.prop("checked");
+
+		if(liveData)
+			liveDataTimer = setInterval("getLast5Minutes()", timerInterval);
+		else
+			clearInterval(liveDataTimer), liveDataTimer = null;
 	});
 	
 	$(".ui.radio.checkbox").click(function()
@@ -323,12 +343,16 @@ $(window).load(function()
 			$("#barchart-dialog").fadeOut("slow");
 	});
 	
+	$("#live-data-box").hide();
 	$("#barchart-dialog").hide();
 	$("#outer-bar").hide();
 	$(".hashtag-content").hide();
 
 	$("#outer-bar").mousedown(function() 
 	{ 
+		if(liveData)
+			return;
+
 		drag = true;
 		
 		if($("#slider").css("opacity") == "0")
@@ -349,6 +373,9 @@ $(window).load(function()
 			return;
 
 		if(!lectureRunning)
+			return;
+
+		if(liveData)
 			return;
 
 		var x = e.pageX;
@@ -386,8 +413,17 @@ function updateValues ()
 	});
 }
 
+var oldData = [ 0, 0, 0 ];
+
 function change(data)
 {
+	if(data[0].value == oldData[0].value 
+	&& data[1].value == oldData[1].value
+	&& data[2].value == oldData[2].value)
+		return;
+
+	else
+		oldData = data;
 
 	//------- PIE SLICES -------
 	var slice = svg.select(".slices").selectAll("path.slice")
@@ -521,14 +557,6 @@ function makeDonutChart()
 		.range(["#9b59b6", "#2980b9", "#2ecc71"]);
 }
 
-function update()
-{
-	var data = [8, 1, 88, 35, 21, 3];
-
-	var chart = d3.select("#barchart").transition();
-	
-	chart.select("rect").duration(500).attr("d", data);
-}
 
 function updateBarChart(labels, values)
 {	
@@ -554,7 +582,7 @@ function updateBarChart(labels, values)
 		.style("width", function(d, i)
 		{
 			var percent = (values[i] / valueSum);
-			console.log(max * percent);
+			//console.log(max * percent);
 			return max * percent + 40 + "px";
 			//return ( x(d)) + 40 + "px"; 
 		})

@@ -7,6 +7,11 @@
   color: white;
 }
 
+#live-data-box
+{
+	padding-bottom:15px;
+}
+
 .hashtag-content
 {
 	height:45px;
