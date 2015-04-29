@@ -37,19 +37,21 @@
                     <input type="checkbox" checked="true"/>
                     <label>View live statistics</label>
                 </div>
-                
             </div>
         </div>
 
         <div ng-controller="lecture">
             <div class="container">
-                <h1 ng-show="!isUndefined(leccode)">Lecture Code: {{leccode}} (<span ng-bind="connections"></span> Connections)
-                 <div id ="hashtag_field">
-                            <div class ="hashtag-content">
-                            </div>
-                        </div>
+                <h2 ng-show="!isUndefined(leccode)">Lecture Code: {{leccode}} (<span ng-bind="connections"></span> Connections)
+					
+					<i class="power icon"></i>  
+					
+					<div id ="hashtag_field">
+						<div class ="hashtag-content">
+						</div>
+					</div>
 
-                </h1>
+                </h2>
 
                <div class="inner">
                     <div class="ui compact labeled icon button" ng-click="openLecture()">
@@ -80,12 +82,6 @@
 
             </div>
         </div>
-
-        <!-- <div class="hashtags" ng-controller="hashtags">
-            <div class="container">
-                
-            </div>
-        </div> -->
 
         <div class="footer">
             <div class="container" ng-controller="questions">

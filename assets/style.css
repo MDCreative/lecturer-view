@@ -1,3 +1,18 @@
+.power.icon:hover
+{
+	opacity:1.0;
+}
+
+.power.icon
+{
+	transition:opacity 1s;
+	opacity:0.8;
+	cursor:pointer;
+	line-height:45px;
+	float:right;
+	margin-left:30px;
+}
+
 #barchart rect {
   font: 10px sans-serif;
   background-color: steelblue;

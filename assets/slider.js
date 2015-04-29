@@ -420,6 +420,21 @@ $(window).load(function()
 	});
 	
 	/**
+	 * Called when the power/logout button is clicked.
+	 *
+	 * @param {function} anonymous - The code to run when the power button is clicked.
+	 */
+	$(".power.icon").click(function()
+	{
+		//Set up reference to root
+		var ref = new Firebase("https://interactive-lecture.firebaseio.com/Test/" + lectureID);
+		
+		//Set status to 0 and refresh the page.
+		ref.child("status").set(0);
+		location.reload();
+	});
+	
+	/**
 	 * Called when one of the lecture duration options is clicked
 	 *
 	 * @param {function} anonymous - The code to run when one of the lecture duration options is clicked.
