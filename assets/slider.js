@@ -249,12 +249,12 @@ function showDisplay(ref)
 		//Clear the barchart before appending.
 		$("#barchart").html("");
 		
-		//Calculate the difference string from the question to now and set up the header
-		var difference = timediff(data.time);
-		$("#barchart-dialog > h3").text("Question results (asked " + difference + ")");
-		
 		//Sum all of the answer counts, to check if there are any answers.
 		var answersSum = answers.reduce(function(p, c) { return p + c });
+		
+		//Calculate the difference string from the question to now and set up the header
+		var difference = timediff(data.time);
+		$("#barchart-dialog > h3").text("Question results (asked " + difference + ", " + answersSum + " participant" + ((answersSum > 1) ? ("s") : ("")) + ")");
 		
 		//If there are no answers, display a notice, otherwise update the barchart with the data provided.
 		if(answersSum == 0)
@@ -339,6 +339,7 @@ function startSliderBar(id)
 	//Show the bar, and show the option to see live data
 	$("#outer-bar").show();
 	$("#live-data-box").show();
+	$(".footer").show();
 
 	//Move the time bar continously and hide the pre-lecture elements.
 	setInterval(moveTimebar, 10);
@@ -491,6 +492,7 @@ $(window).load(function()
 	$("#barchart-dialog").hide();
 	$("#outer-bar").hide();
 	$(".hashtag-content").hide();
+	$(".footer").hide();
 
 	/**
 	 * Called when the time bar is clicked down upon.
