@@ -64,8 +64,7 @@ app.factory('lectureService', function($rootScope, $firebase)
 		return lectureId;
 	}
 	
-	return
-	{
+	return {
 		//Return each function as a property of an object.
 		setLectureId: setLectureId,
 		lectureId: getLectureId,
