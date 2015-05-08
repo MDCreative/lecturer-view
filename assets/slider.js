@@ -2,6 +2,8 @@
  * @file Contains the logic for creating and updating the dynamic donut chart, and all functionalities of the "time bar".
  * @author Benjamin Williams <eeu222@bangor.ac.uk>
  * @author Liam Chapman <eeu239@bangor.ac.uk>
+ * @author Jason Hall <eeu23e@bangor.ac.uk>
+ * @author Huw Price <eeu217@bangor.ac.uk>
 */
 
 var lectureRunning = false;
