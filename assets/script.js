@@ -1,3 +1,10 @@
+/**
+ * @file Controls the logic for question asking, connection handling, lecture ID generation and handling of opening lectures.
+ * @author James Jackson <eeu203@bangor.ac.uk>
+ * @author Benjamin Williams <eeu222@bangor.ac.uk>
+ * @author Liam Chapman <eeu239@bangor.ac.uk>
+*/
+
 //Create an app for angular
 var app = angular.module("lv", ["firebase"]);
 
